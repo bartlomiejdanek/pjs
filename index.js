@@ -22,6 +22,12 @@ class GithHubWrapper {
     return this.client.post(path, payload)
   }
 
+  patchRequest(path, payload) {
+    return this.client.patch(path, payload).catch(function (error) {
+      console.log(error);
+    });
+  }
+
   root() {
     return this.getRequest('/')
   }
@@ -32,6 +38,11 @@ class GithHubWrapper {
 
   getGist(gistId) {
     return this.getRequest(`/gists/${gistId}`)
+  }
+
+  // https://developer.github.com/v3/gists/#update-a-gist
+  updateGist(gistId, payload) {
+    return this.patchRequest(`/gists/${gistId}`, payload)
   }
 }
 let token = process.env['GITHUB_TOKEN']
@@ -56,6 +67,23 @@ let gistPayload = {
   }
 }
 
-ghWrapper.root().then((response) => console.log(response.data))
-ghWrapper.getGist('<< GIST ID>>').then((response) => console.log(response.data))
-ghWrapper.createGist(gistPayload).then((response) => console.log(response.data))
+// ghWrapper.root().then((response) => console.log(response.data))
+// ghWrapper.getGist('<< GIST ID>>').then((response) => console.log(response.data))
+// ghWrapper.createGist(gistPayload).then((response) => console.log(response.data))
+// ghWrapper.getGist('6ba995c78adab722b9c28b5de420c7d8').then((response) => console.log(response.data))
+//
+let gistPayload2 = {
+  "description": "Hello World!!!",
+  "files": {
+    "hello_world_ruby.txt": {
+      "content": "Run `ruby hello_world.rb` or `python hello_world.py` to print Hello World",
+      "filename": "hello_world.md"
+    },
+    "hello_world_python.txt": null,
+    "new_file.txt": {
+      "content": "This is a new placeholder file."
+    }
+  }
+}
+
+ghWrapper.updateGist('6ba995c78adab722b9c28b5de420c7d8', gistPayload2).then((response) => console.log(response.data))
