@@ -23,9 +23,7 @@ class GithHubWrapper {
   }
 
   patchRequest(path, payload) {
-    return this.client.patch(path, payload).catch(function (error) {
-      console.log(error);
-    });
+    return this.client.patch(path, payload)
   }
 
   root() {
@@ -79,7 +77,6 @@ let gistPayload2 = {
       "content": "Run `ruby hello_world.rb` or `python hello_world.py` to print Hello World",
       "filename": "hello_world.md"
     },
-    "hello_world_python.txt": null,
     "new_file.txt": {
       "content": "This is a new placeholder file."
     }
