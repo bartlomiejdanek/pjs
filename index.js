@@ -42,6 +42,10 @@ class GithHubWrapper {
   updateGist(gistId, payload) {
     return this.patchRequest(`/gists/${gistId}`, payload)
   }
+
+  collection(githubUsername, per_page = 30, page = 1) {
+    return this.getRequest(`/users/${githubUsername}/gists?per_page=${per_page}&page=${page}`)
+  }
 }
 let token = process.env['GITHUB_TOKEN']
 // https://nodejs.org/dist/latest-v8.x/docs/api/process.html#process_process_env
@@ -82,5 +86,54 @@ let gistPayload2 = {
     }
   }
 }
+ // x => 0...9
+// 1xx => websocket / ative connections (client <-> server)
+// 2xx => ok!
+// 3xx => redirect => http => https | example.com/ => example.com/sing-in-page
+// 4xx => application errors
+// 5xx => server error
+// 650 => no space left on device
 
-ghWrapper.updateGist('6ba995c78adab722b9c28b5de420c7d8', gistPayload2).then((response) => console.log(response.data))
+// ghWrapper.updateGist('6ba995c78adab722b9c28b5de420c7d8', gistPayload2)
+//   .then((response) => console.log(response))
+//   .catch((error) => console.log(error.response))
+//
+
+ghWrapper.collection('bartlomiejdanek')
+  .then((response) => response.data)
+  .then((gists) => {
+    // arr.forEach(callback[, thisArg])
+
+    let fe = gists.forEach(function(item) {
+      console.log(`${item.id}-${item.description}`)
+      return item.id
+    })
+
+    let map = gists.map(function(item) {
+      console.log(`${item.id}-${item.description}`)
+      return `${item.id}-${item.description}`
+    })
+
+    console.log(fe)
+    console.log("---------------------------------")
+    console.log(map)
+    // var new_array = arr.map(function callback(currentValue, index, array){ // Zwróć element nowej tablicy }[, thisArg])
+  })
+
+
+// https://developer.github.com/v3/#pagination
+
+
+// https://api.github.com/user/repos?page=3&per_page=100
+
+// - page -> nr strony
+// - per_page -> ilosc elementow na jednej stronie
+
+// 1000 itemow
+// per_page 100
+// page 3
+
+// 1 1--100
+// 2 101--200
+// 3 201--300
+
