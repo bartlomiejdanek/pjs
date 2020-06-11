@@ -46,6 +46,16 @@ class GithHubWrapper {
   collection(githubUsername, per_page = 30, page = 1) {
     return this.getRequest(`/users/${githubUsername}/gists?per_page=${per_page}&page=${page}`)
   }
+
+	filter(githubUsername, keyword, per_page = 30, page = 1) {
+		return this.collection(githubUsername, per_page, page)
+			.then((response) => {
+				return response.data.filter(function(gist) {
+					// https://developer.mozilla.org/pl/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+					return gist.description.includes(keyword)
+				})
+			})
+	}
 }
 let token = process.env['GITHUB_TOKEN']
 // https://nodejs.org/dist/latest-v8.x/docs/api/process.html#process_process_env
@@ -99,26 +109,26 @@ let gistPayload2 = {
 //   .catch((error) => console.log(error.response))
 //
 
-ghWrapper.collection('bartlomiejdanek')
-  .then((response) => response.data)
-  .then((gists) => {
-    // arr.forEach(callback[, thisArg])
+// ghWrapper.collection('bartlomiejdanek')
+//   .then((response) => response.data)
+//   .then((gists) => {
+//     // arr.forEach(callback[, thisArg])
 
-    let fe = gists.forEach(function(item) {
-      console.log(`${item.id}-${item.description}`)
-      return item.id
-    })
+//     let fe = gists.forEach(function(item) {
+//       console.log(`${item.id}-${item.description}`)
+//       return item.id
+//     })
 
-    let map = gists.map(function(item) {
-      console.log(`${item.id}-${item.description}`)
-      return `${item.id}-${item.description}`
-    })
+//     let map = gists.map(function(item) {
+//       console.log(`${item.id}-${item.description}`)
+//       return `${item.id}-${item.description}`
+//     })
 
-    console.log(fe)
-    console.log("---------------------------------")
-    console.log(map)
-    // var new_array = arr.map(function callback(currentValue, index, array){ // Zwróć element nowej tablicy }[, thisArg])
-  })
+//     console.log(fe)
+//     console.log("---------------------------------")
+//     console.log(map)
+//     // var new_array = arr.map(function callback(currentValue, index, array){ // Zwróć element nowej tablicy }[, thisArg])
+//   })
 
 
 // https://developer.github.com/v3/#pagination
@@ -137,3 +147,10 @@ ghWrapper.collection('bartlomiejdanek')
 // 2 101--200
 // 3 201--300
 
+
+ghWrapper.filter('bartlomiejdanek', 'circl')
+	.then((collection) => {
+    collection.forEach(function(item) {
+      console.log(`${item.id}-${item.description}`)
+    })
+	})
